@@ -1,0 +1,8 @@
+{
+  "name": "Silent Typing",
+  "version": "1.0.0",
+  "description": "Disables your typing status.",
+  "author": "em#7752",
+  "license": "Unlicense",
+  "repository": "https://github.com/halcyxn/powercord-silenttyping"
+}
