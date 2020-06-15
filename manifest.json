@@ -1,8 +1,8 @@
 {
-  "name": "Silent Typing",
+  "name": "Silent Type",
   "version": "1.0.0",
-  "description": "Disables your typing status.",
-  "author": "halcyxn",
+  "description": "Disables your typing status, or enables it to be seen again",
+  "author": "Kable Kompany#0001",
   "license": "Unlicense",
-  "repository": "https://github.com/halcyxn/powercord-silenttyping"
+  "repository": "https://github.com/kableko/silent-type/"
 }
