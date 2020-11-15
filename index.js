@@ -5,7 +5,7 @@ module.exports = class SilentType extends Plugin {
         powercord.api.commands.registerCommand({
             command: 'silent-type',
             description: 'Keep your typing to yourself!',
-            usage: '{c} [--on|--off]',
+            usage: '{c} [--on|--off|--status]',
             executor: (args) => ({
                 send: false,
                 result:  this.handler(args)
@@ -16,7 +16,7 @@ module.exports = class SilentType extends Plugin {
     }
      handler(args) {
         args = args.map(a => a.toLowerCase())
-        if (args.includes('--off') && args.includes('--on')) {
+        if (args.includes('--off') && args.includes('--on') || args.includes('--on') && args.includes('status')) {
             return "Oops! Instead of receiving one flag I got both!\nSend only one flag next time"
         } else if (args.includes('--on')) {
             if (this.settings.get('on', true)) {
@@ -32,6 +32,8 @@ module.exports = class SilentType extends Plugin {
             this.settings.set('on')
             this.callRefresh()
             return "Turned Off"
+        } else if (args.includes('--status')) {
+            return `Status: \`${this.settings.get('on') ? "On" : "Off"}\``
         } else {
             return `Incorrect Flags or no flags given\nPlease run \`${powercord.api.commands.prefix}help silent-type\` for command usage`
         }
