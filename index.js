@@ -46,4 +46,3 @@ module.exports = class SilentType extends Plugin {
         typing.startTyping = this.oldStartTyping;
     }
 };
-/* TO-DO Command switch capbility */
