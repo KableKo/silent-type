@@ -5,7 +5,7 @@ module.exports = class SilentType extends Plugin {
         powercord.api.commands.registerCommand({
             command: 'silent-type',
             description: 'Keep your typing to yourself!',
-            usage: '{c} [--on|--off|--status]',
+            usage: '{c} [--toggle|--status]',
             executor: (args) => ({
                 send: false,
                 result:  this.handler(args)
@@ -16,26 +16,16 @@ module.exports = class SilentType extends Plugin {
     }
      handler(args) {
         args = args.map(a => a.toLowerCase())
-        if (args.includes('--off') && args.includes('--on') || args.includes('--on') && args.includes('status')) {
-            return "Oops! Instead of receiving one flag I got both!\nSend only one flag next time"
-        } else if (args.includes('--on')) {
-            if (this.settings.get('on', true)) {
-                return "I am already turned on\nIf you would like to turn me off use the `--off` flag"
-            }
+        const current = this.settings.get('on')
+        if ((args.includes('--status') || args.includes('status')) && (args.includes('--toggle') || args.includes('toggle'))) {
+            return `${this.handler(['--toggle'])}\n${this.handler(['--status'])}`
+        } else if (args.includes('--toggle') || args.includes('toggle')) {
             this.settings.set('on')
-            this.callRefresh()
-            return "Turned On"
-        } else if (args.includes('--off')) {
-            if (!this.settings.get('on')) {
-                return "I am already turned off\nIf you would like to turn me on use the `--on` flag"
-            }
-            this.settings.set('on')
-            this.callRefresh()
-            return "Turned Off"
-        } else if (args.includes('--status')) {
-            return `Status: \`${this.settings.get('on') ? "On" : "Off"}\``
+            return `Changed from ${current ? "`On`": "`Off`"} to ${!current ? "`On`": "`Off`"}`
+        } else if (args.includes('--status') ||  args.includes('status')) {
+            return `Status: \`${current ? "On" : "Off"}\``
         } else {
-            return `Incorrect Flags or no flags given\nPlease run \`${powercord.api.commands.prefix}help silent-type\` for command usage`
+            return `${args.length > 0 ? `Incorrect flags \`${args.join('| ')}\` given!\n` : `No Flags given!` }\nPlease run \`${powercord.api.commands.prefix}help silent-type\` for command usage`
         }
     }
 
