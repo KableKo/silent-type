@@ -44,5 +44,6 @@ module.exports = class SilentType extends Plugin {
 
     pluginWillUnload() {
         typing.startTyping = this.oldStartTyping;
+        powercord.api.commands.unregisterCommand('silent-type')
     }
 };
