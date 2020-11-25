@@ -1,49 +1,72 @@
 /* eslint-disable no-empty-function */
-const { Plugin } = require('powercord/entities');
-module.exports = class SilentType extends Plugin {
-    startPlugin() {
-        powercord.api.commands.registerCommand({
-            command: 'silent-type',
-            description: 'Keep your typing to yourself!',
-            usage: '{c} [--toggle|--status]',
-            executor: (args) => ({
-                send: false,
-                result:  this.handler(args)
-            })
-        })
-        // Magic
-        this.callRefresh()
-    }
-     handler(args) {
-        args = args.map(a => a.toLowerCase())
-        const current = this.settings.get('on')
-        if ((args.includes('--status') || args.includes('status')) && (args.includes('--toggle') || args.includes('toggle'))) {
-            return `${this.handler(['--toggle'])}\n${this.handler(['--status'])}`
-        } else if (args.includes('--toggle') || args.includes('toggle')) {
-            this.settings.set('on')
-            return `Changed from ${current ? "`On`": "`Off`"} to ${!current ? "`On`": "`Off`"}`
-        } else if (args.includes('--status') ||  args.includes('status')) {
-            return `Status: \`${current ? "On" : "Off"}\``
-        } else {
-            return `${args.length > 0 ? `Incorrect flags \`${args.join('| ')}\` given!\n` : `No Flags given!` }\nPlease run \`${powercord.api.commands.prefix}help silent-type\` for command usage`
-        }
-    }
+const {
+	webpack: { getModule },
+	entities: { Plugin },
+} = require("powercord");
 
-    callRefresh() {
-        try {
-            const { typing } = require('powercord/webpack');
-            typing.startTyping = (startTyping => (channel) => setImmediate(() => {
-                const on = this.settings.get('on')
-                if (!on) {
-                    startTyping(channel)
-                }
-            }))(this.oldStartTyping = typing.startTyping)
-        } catch (e) {
-        }
-    }
+const typing = getModule(["startTyping"], false);
+const oldStartTyping = typing.startTyping;
 
-    pluginWillUnload() {
-        typing.startTyping = this.oldStartTyping;
-        powercord.api.commands.unregisterCommand('silent-type')
-    }
+module.exports = class SilentType extends (
+	Plugin
+) {
+	startPlugin() {
+		powercord.api.commands.registerCommand({
+			command: "silent-type",
+			description: "Keep your typing to yourself!",
+			usage: `{c} <set <on|off>|toggle|status>`,
+			executor: (args) => {
+				const handle = this.handler(args);
+				typing.stopTyping(window.location.href.split("/")[5]);
+				return {
+					send: false,
+					result: handle,
+				};
+			},
+		});
+		this.replaceStartTyping();
+	}
+
+	statusString = () => {
+		return this.settings.get("on") ? "**on**" : "**off**";
+	};
+
+	handler(args) {
+		args = args.map((a) => a.toLowerCase());
+
+		switch (args[0]) {
+			case "set":
+				this.settings.set("on", args[1] === "off" ? false : true);
+				return `Silent Type is now ${this.statusString()}.`;
+			case "toggle":
+				this.settings.set("on");
+				return `Silent Type is now ${this.statusString()}.`;
+			case "status":
+				return `Silent Type is currently ${this.statusString()}.`;
+			default:
+				return `${
+					args.length > 0
+						? `Incorrect arguments \`${args.join("| ")}\` given!\n`
+						: `No arguements given!`
+				}\nPlease run \`${
+					powercord.api.commands.prefix
+				}help silent-type\` for command usage.`;
+		}
+	}
+
+	replaceStartTyping() {
+		try {
+			typing.startTyping = (channel) => {
+				const on = this.settings.get("on");
+				if (!on) {
+					oldStartTyping(channel);
+				}
+			};
+		} catch (e) {}
+	}
+
+	pluginWillUnload() {
+		typing.startTyping = oldStartTyping;
+		powercord.api.commands.unregisterCommand("silent-type");
+	}
 };

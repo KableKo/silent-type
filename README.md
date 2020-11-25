@@ -3,9 +3,10 @@
 A small Powercord plugin to disable your typing status.
 
 [Powercord](https://powercord.dev) is a Discord client that's snappy and lightweight, and offers a range of tools and tricks that can be used to interact with the platform.
-This plugin can be toggled with `[p]silent-type --toggle` or view current state with `[p]silent-type --status`
+This plugin can be toggled with `[p]silent-type toggle` or view current state with `[p]silent-type status`
 
 ## To-Do
-- [x] ~~Add switch capability to show/hide type notifier (`the use of [p]qtype [--on|--off].`)~~
+
+-   [x] ~~Add switch capability to show/hide type notifier (`the use of [p]qtype [on|off].`)~~
 
 ### Thanks Aetheryx for the help, always
